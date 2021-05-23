@@ -1,0 +1,16 @@
+module reg_16bit (input  logic Clk, Reset, Load,
+						input logic [15:0] data_in,
+						output logic [15:0] data_out
+						);
+						
+	always_ff @ (posedge Clk)
+    begin
+	 	 if (Reset) //notice, this is a sycnrhonous reset, which is recommended on the FPGA
+			  Data_Out <= 16'h0;
+		 else if (Load)
+			  Data_Out <= data_in;
+			  
+	 end
+	 
+endmodule
+	 
