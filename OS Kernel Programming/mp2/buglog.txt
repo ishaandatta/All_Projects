@@ -1,0 +1,102 @@
+make: Warning: File `modex.o' has modification time 2.7e+03 s in the future
+text.c: In function ‘text_to_image’:
+text.c:585: warning: statement with no effect
+text.c:591:49: warning: no newline at end of file
+
+modex.c: In function ‘show_status_bar’:
+modex.c:537: warning: unused variable ‘p_off’
+modex.c:536: warning: unused variable ‘addr’
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+BUG: Text not appearing on status bar.
+BUG: Text on status bar is stretched out. (writing to the same plane
+repeatedly)
+BUG: Text on status bar displaying random symbols. (out of bounds array
+indexing while creating string to pass to text_to_image)
+BUG: Character array of roomname and user's typing getting corrupted (indexing
+out of bounds)
+BUG: Character array not null terminated
+BUG: 1 pixel not getting set in character array (off by 1)
+
+OCTREES:
+BUG 1:
+Symptom: Only shades of red showing up 
+Problem: Trailing zeroes in each RGB value were present when filling each
+octree level
+Solution: Bit shift out the trailing zeroes
+BUG 2: 
+Symptom: Enter screen pixelated
+Problem: Incorrect indexing into pallette
+Solution: Offset by 64 for pre-filled colors and correctly add offset for
+number 4 level octree when filling pallette.
+
+TUX:
+BUG1:
+Symptom: Set LED not displaying anything
+Problem: Incorrect typecasting (character pointer incorrectly accessed/set)
+Solution: Dereference array pointers for their zero index to give reference to
+start of array
+
+BUG2:
+Symptom: Buttons IOCTL causing Kernel Panic
+Problem: Attempting to set memory in user space from Kernel
+Solution: Use system call copy_to_user
+
+BUG3:
+Symptom: Reset not restoring LED state
+Problem: Restore LED in reset never getting called
+Solution: Handle restoring LED as part of handling ACK
+
+BUG4:
+Symptom: ioctl calls causing Kernel panic from input.c
+Problem: Not adding a break at the end of each switch case in IOCTLS
+Solution: Add a break
+
+BUG5: 
+Symptom: Characters A through F displaying after 9 on LED while displaying
+time
+Problem: Display time on tux incrementing to Hexadecimal values
+SOlution: Add a check for the mins value > 9 and shift digits appropriately to
+display decimal values instead of hex
+
+BUG6: 
+Symptom: Spamming multiple buttons and reset causing program to break
+Problem: Incorrectly handling ACKS
+Solution: Create two flags, one for BIOC and one for LED, which get set
+appropriately and create a state machine which handles INIT and RESET
+separetely, and set LED calls seperately. 
+
+BUG7:
+Symptom: Race conditions in Driver (random symbols showing up during
+compilation)
+Problem: Global variables not being accessed atomically
+Solution: Add locks to each access (read and write) for global variables
+
+BUG8:
+Symptom: IOCTL calls from Adventure.c don't execute 
+Problem: File discriptor not able to be accessed
+Solution: Declare fd as extern in input.c and call it in init_game (which is
+called in adventure)
+
+BUG9:
+Symptom: Screen shaking/incorrectly showing up while running adventure with
+tux enabled
+Problem: Printk statements in driver code
+Soltuion: Remove printk statements
+
+BUG 10:
+Symptom: Tux Thread never being executed
+Problem: Incorrect opening/closing of the thread
+Solution: Create cancel_tux_thread function and wake the tux thread in main
+loop 
+
+BUG 11:
+Symptom: Tux controller not working with game
+Problem: 
+
+		BUG 12!!!!!!!!:
+Symptom: TUX CONTROLLER AND KEYBOARD LAGGING DUE IN GAME 
+Problem: THREAD SYNCHRONIZATION UNOPTIMALLY IMPLEMENTED
+SOLUTION: SPEND 12 STRAIGHT HOURS FIGURING OUT OPTIMAL POSIX DESIGN, IMPLEMENT
+IT (Reduce any locks which access shared variables in synch, ensure no live
+locks/ dead locks edge cases are possible
