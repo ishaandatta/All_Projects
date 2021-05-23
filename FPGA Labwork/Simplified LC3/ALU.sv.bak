@@ -1,0 +1,5 @@
+module ALU	(	input logic 
+					input logic
+					output logic
+					
+				);

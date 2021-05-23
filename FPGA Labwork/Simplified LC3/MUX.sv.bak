@@ -1,0 +1,22 @@
+module PCMUX( input logic [15:0] in_1,in_2, in_3,
+								input logic [1:0] select, 
+								output logic [15:0] out
+							);
+							
+always_comb begin
+		
+		unique case (select)
+			2'b00 : out = in_1;
+			2'b01 : out = in_2;
+			2'b10 : out = in_3;
+			default : out = 16'b0; // ??
+		endcase
+		
+	end
+endmodule
+							
+							
+module mux_16bit_2to1();
+
+
+endmodule
