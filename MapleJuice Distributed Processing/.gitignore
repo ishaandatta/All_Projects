@@ -1,0 +1,7 @@
+SDFS/
+credentials.py
+log/
+__pycache__/
+_temp*.txt
+_input*.txt
+_output*.txt
