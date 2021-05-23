@@ -1,0 +1,67 @@
+MP3 BUGLOG:
+
+Bug #1
+Type of problem: Semantic Error
+Description: In function init_idt, we called another function idt_flush, however we passed idt_desc_ptr (x86_desc_t) as an argument.
+Symptom: The system keeps restarting
+Difficulty: A pair of us looked at the code for 3 hours but could not solve the problem till a TA pointed it to us.
+Solution: In the struct x86_desc_t, there is actually a 2 byte badding before 'size' the address for size should be our argument instead 
+of the address for 'padding'. Hence, we needed to increase the memory address by 2 in the argument.
+
+Bug #2
+Type of problem: Semantic Error
+Desciption: For CP1, we are required to use both page directory entry into 4MB page (kernel memory) and page directory entry into 4KB page
+ (video memory). These two entries are separated by the state of the 7th bit (Page Size)
+Symptom: The OS keeps restarting in QEMU
+Difficulty: This mistake was rectified after countless references with the documentation
+Solution: For our page directory entry into 4MB page, we should have set the value of the 7th bit to 1.
+
+Bug #3
+Type of problem: Semantic Error
+Description: To enable paging, one has to load CR3 with address of page directory and set paging bit (MSB) of CR0. However, if you plan to 
+enable 4 MiB pages, you must also change the bit index 1 of the cr4 value to 1 before you set the paging bit of cr0
+Symptom: The OS keeps restarting in QEMU 
+Difficulty: We spent many hours debugging it to no avail. However, our groupmate who was working on keyboard came and suggested the change.
+Solution: Before setting the paging bit of CR0, first enable 4MB pages by changing bit index 1 of cr4 to 1.
+
+Bug #4
+Type of problem: Semantic Error
+Description: Register C was not read after an IRQ8 (RTC interrupt) in the handler.
+Symptom: The RTC interrupt only triggered once.
+Difficulty: About 30 minutes of debugging
+Solution: Read register C after the RTC handler
+
+Bug #5
+Type of problem: Semantic Error
+Description: The IDT entry for 0x80 was set with DPL value to 0
+Symptom: A general protection error was thrown on a system call by a user program
+Difficulty: 30 minutes
+Solution: Change DPL value in the IDT for int 0x80
+
+Bug #6
+Type of problem: Semantic Error
+Description: The '\r' symbol was not handled properly
+Symptom: Printing frame0.txt returns strange symbols at the end of each line
+Difficulty: 30 minutes
+Solution: Add code to handle '\r' symbol in terminal write
+
+Bug #7
+Type of problem: Algorithmic Problem
+Description: Pages were not swapped during context switch
+Symptom: iRET during context switch resulted in a page fault
+Difficulty: 30 minutes
+Solution: Swapped out old page (shell) for the user level program page
+
+Bug #8
+Type of problem: Semantic Problem
+Description: TSS value was not updated
+Symptom: System page faults on system call
+Difficulty: 1 hour
+Solution: Update TSS value before a context switch (to its respective kernel stack)
+
+Bug 9 
+Type of porblem: Semantic Problem
+Description: STI causing F3 to triple fault
+Symptom: Triple fault when spamming F2 and F3
+Difficulty: 30 min
+Solution: remove STI
